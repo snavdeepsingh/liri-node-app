@@ -25,7 +25,11 @@ function nodeLiri(arg, arg1) {
             client.get('statuses/user_timeline', params, function (error, tweets, response) {
                 if (error) throw error;
                 for (var i = 0; i < tweets.length; i++) {
-                    console.log("\n", "tweet", (i + 1), ": ", tweets[i].text, "\n", "Created at: ", tweets[i].created_at, "\n");
+                    console.log(`
+    tweet ${(i+ 1)}:        ${tweets[i].text}
+    Created at :            ${tweets[i].created_at} 
+                    `);
+
                 }
             });
             break;
@@ -40,7 +44,12 @@ function nodeLiri(arg, arg1) {
                 })
                 .then(function (response) {
                     let data = response.tracks.items[0];
-                    console.log("\n", "Artist(s): ", data.artists[0].name, "\n", "Song Name: ", data.name, "\n", "Preview Link: ", data.external_urls.spotify, "\n", "Album: ", data.album.name, "\n");
+                    console.log(`
+    Artist(s):          ${data.artists[0].name}
+    Song Name:          ${data.name}
+    Preview Link:       ${data.external_urls.spotify}
+    Album:              ${data.album.name}
+                    `);
                 })
                 .catch(function (err) {
                     console.log(err);
@@ -53,7 +62,16 @@ function nodeLiri(arg, arg1) {
                 .then(e => {
                     let data = JSON.parse(e);
                     // console.log(data);
-                    console.log("\n", "Movie Title: ", data.Title, "\n", "Movie Year: ", data.Year, "\n", "Movie imdbRating: ", data.imdbRating, "\n", "Movie Rotten Tomatoes Rating: ", data.Ratings[1].Value, "\n", "Country: ", data.Country, "\n", "Language: ", data.Language, "\n", "Movie Plot: ", data.Plot, "\n", "Actors: ", data.Actors);
+                    console.log(`
+    Movie Title:                    ${data.Title}
+    Movie Year:                     ${data.Year}
+    Movie imdbRating:               ${data.imdbRating}
+    Movie Rotten Tomatoes Rating:   ${data.Ratings[1].Value}
+    Country:                        ${data.Country}
+    Language:                       ${data.Language}
+    Actors:                         ${data.Actors}
+    Movie Plot:                     ${data.Plot}
+                    `);
                 })
             break;
 
