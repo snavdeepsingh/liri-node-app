@@ -9,17 +9,22 @@ var fs = require("fs-extra");
 
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
+
 let arg = process.argv[2];
-let arg1 = process.argv.splice(3).join("+");
+let argSearch = process.argv.splice(3).join("+");
 
 
 
-function nodeLiri(arg, arg1) {
+function nodeLiri(arg, argSearch) {
     switch (arg) {
         case "my-tweets":
+
             // add twitter request and response here
+            fs.appendFile("./log.txt", "\n\n User command: node liri.js my-tweets " + argSearch +"\n\n",  (err) => {
+                if (err) throw err;
+            })
             var params = {
-                screen_name: arg1,
+                screen_name: argSearch,
                 count: 20
             };
             client.get('statuses/user_timeline', params, function (error, tweets, response) {
@@ -27,42 +32,97 @@ function nodeLiri(arg, arg1) {
                 for (var i = 0; i < tweets.length; i++) {
                     console.log(`
     tweet ${(i+ 1)}:        ${tweets[i].text}
-    Created at :            ${tweets[i].created_at} 
+    Created at :            ${tweets[i].created_at}
                     `);
-
+                    fs.appendFile("./log.txt", `
+    tweet ${(i+ 1)}:        ${tweets[i].text}
+    Created at :            ${tweets[i].created_at}
+    \n\n
+                    =================================================
+                                    `, (err) => {
+                        if (err) throw err;
+                    })
                 }
             });
             break;
 
         case "spotify-this-song":
             // add spotify request and response here
-            spotify
-                .search({
-                    type: 'track',
-                    query: arg1,
-                    limit: 1
-                })
-                .then(function (response) {
-                    let data = response.tracks.items[0];
-                    console.log(`
+            fs.appendFile("./log.txt", "\n\n User command: node liri.js spotify-this-song " + argSearch+"\n\n", (err) => {
+                if (err) throw err;
+            })
+            if (argSearch === "") {
+                spotify
+                    .search({
+                        type: 'track',
+                        query: "The Sign Ace of Base",
+                        limit: 1
+                    })
+                    .then(function (response) {
+                        let data = response.tracks.items[0];
+                        console.log(`
     Artist(s):          ${data.artists[0].name}
     Song Name:          ${data.name}
     Preview Link:       ${data.external_urls.spotify}
     Album:              ${data.album.name}
                     `);
-                })
-                .catch(function (err) {
-                    console.log(err);
-                });
-            break;
+                    fs.appendFile("./log.txt", `
+    Artist(s):          ${data.artists[0].name}
+    Song Name:          ${data.name}
+    Preview Link:       ${data.external_urls.spotify}
+    Album:              ${data.album.name}
+                    =======================================
+                    \n\n
+                                    `, (err)=>{
+                                        if(err) throw err;
+                                    })
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    });
+            } else {
+                spotify
+                    .search({
+                        type: 'track',
+                        query: argSearch,
+                        limit: 1
+                    })
+                    .then(function (response) {
+                        let data = response.tracks.items[0];
+                        console.log(`
+    Artist(s):          ${data.artists[0].name}
+    Song Name:          ${data.name}
+    Preview Link:       ${data.external_urls.spotify}
+    Album:              ${data.album.name}
+                    `);
+                    fs.appendFile("./log.txt", `
+    Artist(s):          ${data.artists[0].name}
+    Song Name:          ${data.name}
+    Preview Link:       ${data.external_urls.spotify}
+    Album:              ${data.album.name}
+                    =======================================
+                    \n\n
+                                    `, (err)=>{
+                                        if(err) throw err;
+                                    })
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    });
+            }
+        break;
 
         case "movie-this":
             // add omdbi request and response here
-            request("http://www.omdbapi.com/?t=" + arg1 + "&y=&plot=short&apikey=c172e433")
-                .then(e => {
-                    let data = JSON.parse(e);
-                    // console.log(data);
-                    console.log(`
+            fs.appendFile("./log.txt", "\n\n User command: node liri.js movie-this " + argSearch+"\n\n", (err) =>{
+                if(err) throw err;
+            })
+            if (argSearch === "") {
+                request("http://www.omdbapi.com/?t=" + "Mr. Nobody." + "&y=&plot=short&apikey=c172e433")
+                    .then(e => {
+                        let data = JSON.parse(e);
+                        // console.log(data);
+                        console.log(`
     Movie Title:                    ${data.Title}
     Movie Year:                     ${data.Year}
     Movie imdbRating:               ${data.imdbRating}
@@ -72,17 +132,76 @@ function nodeLiri(arg, arg1) {
     Actors:                         ${data.Actors}
     Movie Plot:                     ${data.Plot}
                     `);
-                })
+                    fs.appendFile("./log.txt", `
+    Movie Title:                    ${data.Title}
+    Movie Year:                     ${data.Year}
+    Movie imdbRating:               ${data.imdbRating}
+    Movie Rotten Tomatoes Rating:   ${data.Ratings[1].Value}
+    Country:                        ${data.Country}
+    Language:                       ${data.Language}
+    Actors:                         ${data.Actors}
+    Movie Plot:                     ${data.Plot}
+                    =======================================
+                    \n\n
+                                    `, (err)=>{
+                                        if(err) throw err;
+                                    })
+                    })
+            } else {
+                request("http://www.omdbapi.com/?t=" + argSearch + "&y=&plot=short&apikey=c172e433")
+                    .then(e => {
+                        let data = JSON.parse(e);
+                        // console.log(data);
+                        console.log(`
+    Movie Title:                    ${data.Title}
+    Movie Year:                     ${data.Year}
+    Movie imdbRating:               ${data.imdbRating}
+    Movie Rotten Tomatoes Rating:   ${data.Ratings[1].Value}
+    Country:                        ${data.Country}
+    Language:                       ${data.Language}
+    Actors:                         ${data.Actors}
+    Movie Plot:                     ${data.Plot}
+                    `);
+                    fs.appendFile("./log.txt", `
+    Movie Title:                    ${data.Title}
+    Movie Year:                     ${data.Year}
+    Movie imdbRating:               ${data.imdbRating}
+    Movie Rotten Tomatoes Rating:   ${data.Ratings[1].Value}
+    Country:                        ${data.Country}
+    Language:                       ${data.Language}
+    Actors:                         ${data.Actors}
+    Movie Plot:                     ${data.Plot}
+                    =======================================
+                    \n\n
+                                    `, (err)=>{
+                                        if(err) throw err;
+                                    })
+                    })
+            }
+
             break;
 
         case "do-what-it-says":
             // add fs.readFile to read random.txt here
+            fs.appendFile("./log.txt", "\n\n User command: node liri.js do-what-it-says " + argSearch+"\n\n", (err) =>{
+                if(err) throw err;
+            })
             fs.readFile("random.txt", "utf8")
                 .then(data => {
                     let Data = data.split(",");
                     arg = Data[0];
-                    arg1 = Data[1];
-                    nodeLiri(arg, arg1);
+                    argSearch = Data[1];
+                    nodeLiri(arg, argSearch);
+                    fs.appendFile("./log.txt", `
+    Artist(s):          ${data.artists[0].name}
+    Song Name:          ${data.name}
+    Preview Link:       ${data.external_urls.spotify}
+    Album:              ${data.album.name}
+                    =======================================
+                    \n\n
+                                    `, (err)=>{
+                                        if(err) throw err;
+                                    })
                 })
                 .catch(err => {
                     console.log(err)
@@ -92,8 +211,8 @@ function nodeLiri(arg, arg1) {
         default:
             inquirer.prompt([{
                 type: "list",
-                message: "Choose a command:",
-                choices: ["node liri my-tweets ", "spotify-this-song", "movie-this", "do-what-it-says"],
+                message: "You must enter a command like this:",
+                choices: ["node liri my-tweets ", "node liri spotify-this-song", "node liri movie-this", "node liri do-what-it-says"],
                 name: "userchoice"
             }]).then(answers => {
                 console.log(answers)
@@ -101,4 +220,4 @@ function nodeLiri(arg, arg1) {
     };
 };
 
-nodeLiri(arg, arg1);
+nodeLiri(arg, argSearch);
